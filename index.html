@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jarvis — AI Customer Relationship Assistant</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card-bg: #ffffff;
+      --text-main: #1d1d1f;
+      --text-sub: #86868b;
+      --accent: #0071e3;
+      --accent-hover: #0077ed;
+      --border: rgba(0, 0, 0, 0.08);
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text-main); line-height: 1.5; padding: 20px 16px 60px; -webkit-font-smoothing: antialiased; }
+    .container { max-width: 920px; margin: 0 auto; }
+
+    /* Header & Hero */
+    header { text-align: center; padding: 60px 20px 40px; }
+    .avatar-wrapper { display: inline-flex; align-items: center; justify-content: center; width: 80px; height: 80px; background: #ffffff; border-radius: 50%; box-shadow: var(--shadow); margin-bottom: 20px; font-size: 36px; border: 1px solid var(--border); }
+    .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(52, 199, 89, 0.1); color: #248a3d; padding: 6px 16px; border-radius: 30px; font-size: 13px; font-weight: 600; margin-bottom: 16px; }
+    .pulse-dot { width: 8px; height: 8px; background-color: #34c759; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
+    h1 { font-size: 44px; font-weight: 700; tracking: -0.015em; margin-bottom: 12px; color: var(--text-main); }
+    .tagline { font-size: 19px; color: var(--text-sub); max-width: 680px; margin: 0 auto; font-weight: 400; }
+
+    /* Section Global */
+    section { margin-top: 40px; }
+    .section-title { font-size: 24px; font-weight: 600; text-align: center; margin-bottom: 24px; letter-spacing: -0.01em; }
+
+    /* Problem & Solution Grid */
+    .comp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .card { background: var(--card-bg); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+    .card-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .chaos-card { border-top: 4px solid #ff3b30; }
+    .solution-card { border-top: 4px solid #34c759; }
+    .card-list { list-style: none; }
+    .card-list li { font-size: 14px; color: var(--text-sub); margin-bottom: 12px; display: flex; align-items: flex-start; gap: 10px; }
+    .card-list li::before { content: "•"; font-weight: bold; font-size: 16px; }
+    .chaos-card li::before { color: #ff3b30; }
+    .solution-card li::before { color: #34c759; }
+
+    /* Capabilities */
+    .caps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+    .cap-card { background: var(--card-bg); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); }
+    .cap-icon { font-size: 28px; margin-bottom: 12px; }
+    .cap-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .cap-desc { font-size: 13px; color: var(--text-sub); line-height: 1.6; }
+
+    /* Interactive Simulation */
+    .sim-container { background: var(--card-bg); border-radius: var(--radius); padding: 24px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+    .sim-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px; }
+    .sim-btn { background: #e8e8ed; border: none; padding: 10px 18px; border-radius: 30px; font-size: 13px; font-weight: 500; color: var(--text-main); cursor: pointer; transition: all 0.2s ease; }
+    .sim-btn:hover, .sim-btn.active { background: var(--accent); color: #ffffff; }
+    .chat-box { background: #f9f9fb; border-radius: 16px; padding: 20px; min-height: 180px; display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--border); }
+    .msg { max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.4; animation: fadeIn 0.3s ease-in; }
+    .msg-user { background: var(--accent); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+    .msg-agent { background: #e5e5ea; color: var(--text-main); align-self: flex-start; border-bottom-left-radius: 4px; }
+    .typing { font-style: italic; color: var(--text-sub); font-size: 12px; align-self: flex-start; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Footer & CTA */
+    footer { text-align: center; margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border); }
+    .cta-btn { display: inline-block; background: var(--accent); color: white; padding: 14px 32px; border-radius: 980px; text-decoration: none; font-size: 16px; font-weight: 500; transition: background 0.2s; box-shadow: 0 4px 12px rgba(0,113,227,0.25); }
+    .cta-btn:hover { background: var(--accent-hover); }
+    .footer-text { margin-top: 24px; font-size: 12px; color: var(--text-sub); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 1. Hero Section -->
+    <header>
+      <div class="avatar-wrapper">🤖</div>
+      <br>
+      <div class="status-badge"><span class="pulse-dot"></span> Status: Active & Ready 24/7</div>
+      <h1>Jarvis</h1>
+      <p class="tagline">Asisten AI pintar untuk mengelola jadwal follow-up pelanggan secara rutin dan mengingat seluruh detail rekam jejak hubungan bisnis Anda.</p>
+    </header>
+
+    <!-- 2. Problem & Solution Section -->
+    <section>
+      <h2 class="section-title">Mengapa Membutuhkan Jarvis?</h2>
+      <div class="comp-grid">
+        <div class="card chaos-card">
+          <div class="card-title">❌ The Chaos</div>
+          <ul class="card-list">
+            <li>Lupa waktu follow-up rutin setelah bertemu banyak pelanggan.</li>
+            <li>Kehilangan kontak, detail jabatan, hierarki atasan, dan peran khusus.</li>
+            <li>Lupa catatan personal (hobi, info keluarga, agenda cuti, topik rapat terakhir).</li>
+            <li>Bingung menentukan topik obrolan saat ingin menghubungi kembali.</li>
+          </ul>
+        </div>
+        <div class="card solution-card">
+          <div class="card-title">✅ The Solution</div>
+          <ul class="card-list">
+            <li>Pengingat otomatis default 2 mingguan (dapat disesuaikan kebutuhan).</li>
+            <li>Memori pelanggan terpusat: rekam profil lengkap, riwayat & hierarki.</li>
+            <li>Rekomendasi bahan percakapan cerdas berdasarkan riwayat sebelumnya.</li>
+            <li>Integrasi mulus ke alat kerja harian Anda tanpa ribet.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Core Capabilities -->
+    <section>
+      <h2 class="section-title">Fitur & Integrasi Utama</h2>
+      <div class="caps-grid">
+        <div class="cap-card">
+          <div class="cap-icon">📅</div>
+          <div class="cap-title">Google Calendar Sync</div>
+          <div class="cap-desc">Menjadwalkan agenda follow-up berkala secara otomatis dan mengecek ketersediaan waktu Anda secara real-time.</div>
+        </div>
+        <div class="cap-card">
+          <div class="cap-icon">📊</div>
+          <div class="cap-title">Customer Memory Bank</div>
+          <div class="cap-desc">Tersambung ke Google Sheets & Drive untuk merekap profil, hobi, info keluarga, hingga riwayat cuti pelanggan.</div>
+        </div>
+        <div class="cap-card">
+          <div class="cap-icon">👥</div>
+          <div class="cap-title">Human-in-the-Loop</div>
+          <div class="cap-desc">Mendukung konfirmasi & input data tambahan secara fleksibel saat membutuhkan validasi manusia.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Interactive Simulation -->
+    <section>
+      <h2 class="section-title">Simulasi Cepat Jarvis</h2>
+      <div class="sim-container">
+        <div class="sim-buttons">
+          <button class="sim-btn active" onclick="runSim(1)">📅 Cek Schedule Follow-Up</button>
+          <button class="sim-btn" onclick="runSim(2)">🧠 Simpan Profil Customer</button>
+          <button class="sim-btn" onclick="runSim(3)">💡 Rekomendasi Obrolan</button>
+        </div>
+        <div class="chat-box" id="chatBox">
+          <!-- Chat content populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Footer & CTA -->
+    <footer>
+      <a href="https://wa.me/6281330595925" target="_blank" class="cta-btn">Hubungi / Konsultasi via WhatsApp</a>
+      <p class="footer-text">Built with AI · AI Builder Bootcamp Showcase</p>
+    </footer>
+  </div>
+
+  <script>
+    const scenarios = {
+      1: {
+        user: "Jarvis, siapa pelanggan yang waktunya di-follow up minggu ini?",
+        agent: "Ada 3 pelanggan yang waktunya follow-up berkala: Pak Budi (Direktur PT Sukses), Bu Sinta (VP Sales), dan Pak Anton. Jadwal pengingat sudah saya sinkronkan ke Google Calendar Anda."
+      },
+      2: {
+        user: "Simpan data Pak Budi: hobi golf, baru cuti liburan dari Bali bersama keluarga, atasannya Pak Heru.",
+        agent: "Data Pak Budi berhasil diperbarui di Google Sheets & Drive! Catatan hobi, riwayat liburan Bali, dan hierarki atasan (Pak Heru) sudah tersimpan rapi."
+      },
+      3: {
+        user: "Saya mau hubungi Pak Budi hari ini, beri rekomendasi bahasan dong.",
+        agent: "Saran topik: Tanyakan kesan liburannya di Bali & tindak lanjuti diskusi proposal modul AI minggu lalu. Ini akan membuat obrolan terasa personal dan hangat!"
+      }
+    };
+
+    function runSim(id) {
+      document.querySelectorAll('.sim-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active', idx === id - 1);
+      });
+
+      const box = document.getElementById('chatBox');
+      const data = scenarios[id];
+      box.innerHTML = `<div class="msg msg-user">${data.user}</div><div class="typing" id="typing">Jarvis sedang mengetik...</div>`;
+
+      setTimeout(() => {
+        const typing = document.getElementById('typing');
+        if (typing) typing.remove();
+        box.innerHTML += `<div class="msg msg-agent">${data.agent}</div>`;
+      }, 1000);
+    }
+
+    // Run first scenario on load
+    runSim(1);
+  </script>
+</body>
+</html>
